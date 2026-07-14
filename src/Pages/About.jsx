@@ -1,12 +1,9 @@
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  Button,
   Grid,
+  Card,
   Avatar,
-  Container
 } from "@mui/material";
 
 // Replace these paths with your correct relative image routes
