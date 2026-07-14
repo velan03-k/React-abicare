@@ -1,11 +1,12 @@
 import {
   Box,
+  Container,
   Typography,
   Grid,
   Card,
+  CardContent,
   Avatar,
 } from "@mui/material";
-
 // Replace these paths with your correct relative image routes
 import hospitalImg from "../Assets/Gemini_Generated_Image_aq0j32aq0j32aq0j-clean.png"
 import doctor1 from "../Assets/Gemini_Generated_Image_9fqu489fqu489fqu (1).png" ;
