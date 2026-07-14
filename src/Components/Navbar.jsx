@@ -3,10 +3,31 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import logo from "../Assets/Gemini_Generated_Image_r3w7g9r3w7g9r3w7-clean.png";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
+
+import { useState } from "react";
+import {
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+const open = Boolean(anchorEl);
+
+const navigate = useNavigate();
+
+const handleMenuOpen = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+
+const handleMenuClose = () => {
+  setAnchorEl(null);
+};
   return (
     <AppBar position="static" sx={{ backgroundColor: "#0F172A" }}>
       <Toolbar   sx={{
@@ -32,6 +53,7 @@ function Navbar() {
     "& .MuiButton-root": {
       fontWeight: 600,
       fontSize: "19px",
+      color : "#6BBAE0",
       textTransform: "none",
       transition: "all 0.3s ease",
     },
@@ -47,18 +69,36 @@ function Navbar() {
   <Button color="inherit">Doctors</Button>
   <Button color="inherit">Departments</Button>
   <Button color="inherit">Applications</Button>
-<IconButton
-  sx={{
-    ml: 2,
-    transition: "0.3s",
+<>
+  <IconButton
+    onClick={handleMenuOpen}
+    sx={{
+      ml: 2,
+      transition: "0.3s",
 
-    "&:hover": {
-      transform: "scale(1.1)",
-    },
-  }}
->
-  <Avatar />
-</IconButton>
+      "&:hover": {
+        transform: "scale(1.1)",
+      },
+    }}
+  >
+    <Avatar />
+  </IconButton>
+
+  <Menu
+    anchorEl={anchorEl}
+    open={open}
+    onClose={handleMenuClose}
+  >
+    <MenuItem
+      onClick={() => {
+        handleMenuClose();
+        navigate("/login");
+      }}
+    >
+      Login
+    </MenuItem>
+  </Menu>
+</>
 
 </Box>
       </Toolbar>
