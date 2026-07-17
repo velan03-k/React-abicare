@@ -14,7 +14,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-function Navbar() {
+function AdminNavbar() {
   const [anchorEl, setAnchorEl] = useState(null);
 
 const open = Boolean(anchorEl);
@@ -97,6 +97,45 @@ const handleMenuClose = () => {
     >
       Login
     </MenuItem>
+
+            <MenuItem
+      onClick={() => {
+        handleMenuClose();
+        navigate("/admin/dashboard");
+      }}
+    >
+      Dashboard
+    </MenuItem>
+
+        <MenuItem
+      onClick={() => {
+        handleMenuClose();
+        navigate("/login");
+      }}
+    >
+      Doctores
+    </MenuItem>
+
+        <MenuItem
+      onClick={() => {
+        handleMenuClose();
+        navigate("/login");
+      }}
+    >
+      Departements
+    </MenuItem>
+
+        <MenuItem
+      onClick={() => {
+        handleMenuClose();
+        navigate("/login");
+      }}
+    >
+      Applications
+    </MenuItem>
+
+
+    
   </Menu>
 </>
 
@@ -106,4 +145,4 @@ const handleMenuClose = () => {
   );
 }
 
-export default Navbar;
+export default AdminNavbar;
