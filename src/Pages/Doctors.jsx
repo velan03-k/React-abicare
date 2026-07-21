@@ -24,15 +24,7 @@ import doctorsHeroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-
 import axios from "axios";
 
 // Static list of departments used for the filter dropdown (page copy, not patient/doctor data)
-const DEPARTMENTS = [
-  { value: "all", label: "All Departments" },
-  { value: "Cardiology", label: "Cardiology" },
-  { value: "Neurology", label: "Neurology" },
-  { value: "Orthopedics", label: "Orthopedics" },
-  { value: "Pediatrics", label: "Pediatrics" },
-  { value: "Dermatology", label: "Dermatology" },
-  { value: "Gynecology", label: "Gynecology" },
-];
+
 
 const WHY_CHOOSE_US = [
   "Highly qualified and experienced medical professionals.",
@@ -93,6 +85,37 @@ const [search, setSearch] = useState("");
 const [department, setDepartment] = useState("all");
 const [doctors, setDoctors] = useState([]);
 const [loading, setLoading] = useState(true);
+const [departments, setDepartments] = useState([]);
+
+useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/departments"
+      );
+
+      setDepartments(response.data);
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  };
+
+  fetchDepartments();
+}, []);useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/departments"
+      );
+
+      setDepartments(response.data);
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  };
+
+  fetchDepartments();
+}, []);
 
 useEffect(() => {
   const fetchDoctors = async () => {
@@ -115,13 +138,16 @@ useEffect(() => {
 }, []);
 
 const filteredDoctors = doctors.filter((doctor) => {
-        const matchesSearch = (doctor.name || "")
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesDepartment =
-      department === "all" || doctor.department === department;
-    return matchesSearch && matchesDepartment;
-  });
+  const matchesSearch = (doctor.name || "")
+    .toLowerCase()
+    .includes(search.toLowerCase());
+
+  const matchesDepartment =
+    department === "all" ||
+    doctor.department?.name === department;
+
+  return matchesSearch && matchesDepartment;
+});
 
   return (
     <Box sx={{ backgroundColor: "#0F172A" }}>
@@ -333,29 +359,18 @@ const filteredDoctors = doctors.filter((doctor) => {
               <Typography sx={{ color: "#6BBAE0", fontWeight: 600 }}>
                 Filter by:
               </Typography>
+<Select
+  value={department}
+  onChange={(e) => setDepartment(e.target.value)}
+>
+  <MenuItem value="all">All Departments</MenuItem>
 
-              <Select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                sx={{
-                  backgroundColor: "#1E293B",
-                  color: "white",
-                  borderRadius: "999px",
-                  minWidth: 200,
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(107,186,224,0.3)",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#6BBAE0",
-                  },
-                }}
-              >
-                {DEPARTMENTS.map((dept) => (
-                  <MenuItem key={dept.value} value={dept.value}>
-                    {dept.label}
-                  </MenuItem>
-                ))}
-              </Select>
+  {departments.map((dept) => (
+    <MenuItem key={dept._id} value={dept.name}>
+      {dept.name}
+    </MenuItem>
+  ))}
+</Select>
             </Box>
           </Box>
         </Box>
@@ -473,15 +488,15 @@ const filteredDoctors = doctors.filter((doctor) => {
             Dr. {doctor.name}
           </Typography>
 
-          <Typography
-            sx={{
-              color: "#6BBAE0",
-              fontWeight: 600,
-              mb: 2,
-            }}
-          >
-            {doctor.department}
-          </Typography>
+  <Typography
+  sx={{
+    color: "#6BBAE0",
+    fontWeight: 600,
+    mb: 2,
+  }}
+>
+  {doctor.department?.name}
+</Typography>
 
           <Box
             component="ul"

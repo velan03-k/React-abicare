@@ -29,9 +29,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
-export default function Doctoresadmin() {
-  const [doctors, setDoctors] = useState([]);
-
+export default function Departmentsadmin() {
   const [departments, setDepartments] = useState([]);
 
   const [open, setOpen] = useState(false);
@@ -40,43 +38,27 @@ export default function Doctoresadmin() {
 
   const [form, setForm] = useState({
     name: "",
+    description: "",
+    headDoctor: "",
     email: "",
     phone: "",
-    department: "",
-    qualification: "",
-    experience: "",
-    fee: "",
+    totalDoctors: "",
     status: "Active",
   });
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchDepartments = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/doctors");
-        setDoctors(response.data.doctors);
-      } catch (error) {
-        console.error("Failed to load doctors:", error);
+        const response = await axios.get(
+          "http://localhost:5000/api/departments"
+        );
+setDepartments(response.data || []);      } catch (error) {
+        console.error("Failed to load departments:", error);
       }
     };
 
-    fetchDoctors();
+    fetchDepartments();
   }, []);
-
-  useEffect(() => {
-  const fetchDepartments = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/departments"
-      );
-
-      setDepartments(response.data);
-    } catch (error) {
-      console.error("Failed to load departments:", error);
-    }
-  };
-
-  fetchDepartments();
-}, []);
 
   const handleChange = (e) => {
     setForm({
@@ -85,44 +67,56 @@ export default function Doctoresadmin() {
     });
   };
 
-  const handleAddDoctor = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/doctors",
-        form
-      );
+const handleAddDepartment = async () => {
+  try {
 
-      // Add the newly created doctor from the server
-      setDoctors((prevDoctors) => [...prevDoctors, response.data]);
-      console.log("POST Response:", response.data);
+    const response = await axios.post(
+      "http://localhost:5000/api/departments",
+      form
+    );
 
 
-      // Reset form
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        department: "",
-        qualification: "",
-        experience: "",
-        fee: "",
-        status: "Active",
-      });
+    console.log("POST Response:", response.data);
 
-      setOpen(false);
 
-      alert("Doctor added successfully!");
-    } catch (error) {
-      console.error(error);
+    setDepartments((prevDepartments = []) => [
+      ...prevDepartments,
+      response.data
+    ]);
 
-      alert(error.response?.data?.message || "Failed to add doctor.");
-    }
-  };
 
-const filteredDoctors = doctors.filter((doctor) =>
-  (doctor.name || "").toLowerCase().includes(search.toLowerCase())
+    setForm({
+      name: "",
+      description: "",
+      headDoctor: "",
+      email: "",
+      phone: "",
+      totalDoctors: "",
+      status: "Active",
+    });
+
+
+    setOpen(false);
+
+    alert("Department added successfully!");
+
+
+  } catch(error) {
+
+    console.error("Department Error:", error);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to add department"
+    );
+
+  }
+};
+const filteredDepartments = (departments || []).filter((department) =>
+  (department.name || "")
+    .toLowerCase()
+    .includes(search.toLowerCase())
 );
-
 const textFieldStyle = {
   "& .MuiInputLabel-root": {
     color: "#94A3B8",
@@ -169,11 +163,11 @@ const textFieldStyle = {
               fontSize: 28,
             }}
           >
-            Doctors
+            Departments
           </Typography>
 
           <Typography sx={{ color: "#94A3B8" }}>
-            Manage all doctors in ABI CARE
+            Manage all departments in ABI CARE
           </Typography>
         </Box>
 
@@ -195,7 +189,7 @@ const textFieldStyle = {
             },
           }}
         >
-          Add Doctor
+          Add Department
         </Button>
       </Box>
 
@@ -209,7 +203,7 @@ const textFieldStyle = {
       >
         <TextField
           fullWidth
-          placeholder="Search Doctor..."
+          placeholder="Search Department..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           slotProps={{
@@ -229,19 +223,17 @@ const textFieldStyle = {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "#38BDF8" }}>Doctor Name</TableCell>
+                <TableCell sx={{ color: "#38BDF8" }}>Department Name</TableCell>
+
+                <TableCell sx={{ color: "#38BDF8" }}>Head Doctor</TableCell>
 
                 <TableCell sx={{ color: "#38BDF8" }}>Email</TableCell>
 
                 <TableCell sx={{ color: "#38BDF8" }}>Phone</TableCell>
 
-                <TableCell sx={{ color: "#38BDF8" }}>Department</TableCell>
+                <TableCell sx={{ color: "#38BDF8" }}>Total Doctors</TableCell>
 
-                <TableCell sx={{ color: "#38BDF8" }}>Qualification</TableCell>
-
-                <TableCell sx={{ color: "#38BDF8" }}>Experience</TableCell>
-
-                <TableCell sx={{ color: "#38BDF8" }}>Consultation Fee</TableCell>
+                <TableCell sx={{ color: "#38BDF8" }}>Status</TableCell>
 
                 <TableCell align="center" sx={{ color: "#38BDF8" }}>
                   Actions
@@ -250,33 +242,30 @@ const textFieldStyle = {
             </TableHead>
 
             <TableBody>
-              {filteredDoctors.map((doctor) => (
-                <TableRow key={doctor._id}>
+              {filteredDepartments.map((department) => (
+                <TableRow key={department._id}>
                   <TableCell sx={{ color: "white" }}>
-                    {doctor.name}
+                    {department.name}
                   </TableCell>
 
                   <TableCell sx={{ color: "#CBD5E1" }}>
-                    {doctor.email}
+                    {department.headDoctor}
                   </TableCell>
 
                   <TableCell sx={{ color: "#CBD5E1" }}>
-                    {doctor.phone}
-                  </TableCell>
-<TableCell sx={{ color: "#CBD5E1" }}>
-  {doctor.department?.name}
-</TableCell>
-
-                  <TableCell sx={{ color: "#CBD5E1" }}>
-                    {doctor.qualification}
+                    {department.email}
                   </TableCell>
 
                   <TableCell sx={{ color: "#CBD5E1" }}>
-                    {doctor.experience}
+                    {department.phone}
                   </TableCell>
 
                   <TableCell sx={{ color: "#CBD5E1" }}>
-                    {doctor.fee}
+                    {department.totalDoctors}
+                  </TableCell>
+
+                  <TableCell sx={{ color: "#CBD5E1" }}>
+                    {department.status}
                   </TableCell>
 
                   <TableCell align="center">
@@ -294,7 +283,7 @@ const textFieldStyle = {
           </Table>
         </TableContainer>
       </Card>
-{/* Add Doctor Dialog */}
+{/* Add Department Dialog */}
 
 < Dialog
   open={open}
@@ -318,7 +307,7 @@ const textFieldStyle = {
       color: "#38BDF8",
     }}
   >
-    Add New Doctor
+    Add New Department
   </DialogTitle>
 
   <DialogContent sx={{ mt: 2 }}>
@@ -326,9 +315,20 @@ const textFieldStyle = {
       <Grid size={{ xs: 12, md: 6 }}>
         <TextField
           fullWidth
-          label="Doctor Name"
+          label="Department Name"
           name="name"
           value={form.name}
+          onChange={handleChange}
+          sx={textFieldStyle}
+        />
+      </Grid>
+
+      <Grid size={{ xs: 12, md: 6 }}>
+        <TextField
+          fullWidth
+          label="Head Doctor"
+          name="headDoctor"
+          value={form.headDoctor}
           onChange={handleChange}
           sx={textFieldStyle}
         />
@@ -358,51 +358,11 @@ const textFieldStyle = {
 
       <Grid size={{ xs: 12, md: 6 }}>
         <TextField
-  select
-  fullWidth
-  label="Department"
-  name="department"
-  value={form.department}
-  onChange={handleChange}
-  sx={textFieldStyle}
->
-  {departments.map((dept) => (
-    <MenuItem key={dept._id} value={dept._id}>
-      {dept.name}
-    </MenuItem>
-  ))}
-</TextField>
-      </Grid>
-
-      <Grid size={{ xs: 12, md: 6 }}>
-        <TextField
           fullWidth
-          label="Qualification"
-          name="qualification"
-          value={form.qualification}
-          onChange={handleChange}
-          sx={textFieldStyle}
-        />
-      </Grid>
-
-      <Grid size={{ xs: 12, md: 6 }}>
-        <TextField
-          fullWidth
-          label="Experience"
-          name="experience"
-          placeholder="Eg: 8 Years"
-          value={form.experience}
-          onChange={handleChange}
-          sx={textFieldStyle}
-        />
-      </Grid>
-
-      <Grid size={{ xs: 12, md: 6 }}>
-        <TextField
-          fullWidth
-          label="Consultation Fee"
-          name="fee"
-          value={form.fee}
+          label="Total Doctors"
+          name="totalDoctors"
+          placeholder="Eg: 5"
+          value={form.totalDoctors}
           onChange={handleChange}
           sx={textFieldStyle}
         />
@@ -419,8 +379,21 @@ const textFieldStyle = {
           sx={textFieldStyle}
         >
           <MenuItem value="Active">Active</MenuItem>
-          <MenuItem value="On Leave">On Leave</MenuItem>
+          <MenuItem value="Inactive">Inactive</MenuItem>
         </TextField>
+      </Grid>
+
+      <Grid size={12}>
+        <TextField
+          fullWidth
+          multiline
+          rows={3}
+          label="Description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          sx={textFieldStyle}
+        />
       </Grid>
     </Grid>
   </DialogContent>
@@ -440,7 +413,7 @@ const textFieldStyle = {
 
           <Button
             variant="contained"
-            onClick={handleAddDoctor}
+            onClick={handleAddDepartment}
             sx={{
               bgcolor: "#38BDF8",
               textTransform: "none",
@@ -451,9 +424,8 @@ const textFieldStyle = {
               },
             }}
           >
-            Add Doctor
+            Add Department
           </Button>
-          console.log(doctors);
         </DialogActions>
       </Dialog>
     </Box>
