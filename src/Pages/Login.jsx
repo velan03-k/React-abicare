@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
+import axios from "axios";
 
 function Login() {
   const [loginData, setLoginData] = useState({
@@ -29,13 +30,32 @@ function Login() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log(loginData);
+      try {
+        console.log(loginData);
+    const responce = await axios.post("http://localhost:5000/api/users/login", loginData);
+
+
+alert(responce.data.message);
+
+console.log(responce.data);
+
+// clear form data
+setLoginData({
+  email: "",
+  password: "",
+  remember: false
+});
+
+  } catch (error) {
+    console.error(error);
+    alert(error.response.data.message || "Login failed.");
+  }
+}
 
     // Backend Login API
-  };
 
   const textFieldStyle = {
     "& .MuiOutlinedInput-root": {

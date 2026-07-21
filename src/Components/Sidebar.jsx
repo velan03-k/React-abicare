@@ -119,13 +119,17 @@ function Sidebar({ activeItem = "Dashboard", onSelect }) {
                   {item.icon}
                 </ListItemIcon>
                 {!collapsed && (
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: active ? 700 : 500,
-                      fontSize: "15px",
-                    }}
-                  />
+<ListItemText
+  primary={item.label}
+  slotProps={{
+    primary: {
+      sx: {
+        fontWeight: active ? 700 : 500,
+        fontSize: "15px",
+      },
+    },
+  }}
+/>
                 )}
               </ListItemButton>
             </Tooltip>
@@ -159,10 +163,19 @@ function Sidebar({ activeItem = "Dashboard", onSelect }) {
               <LogoutRoundedIcon />
             </ListItemIcon>
             {!collapsed && (
-              <ListItemText
-                primary="Logout"
-                primaryTypographyProps={{ fontWeight: 600, fontSize: "15px" }}
-              />
+            <ListItemText
+  primary={
+    <Box
+      component="span"
+      sx={{
+        fontWeight: 600,
+        fontSize: "15px",
+      }}
+    >
+      Logout
+    </Box>
+  }
+/>
             )}
           </ListItemButton>
         </Tooltip>

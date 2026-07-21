@@ -6,6 +6,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
+import axios from "axios";
 
 export default function Signup() {
   const [formData,setFormData]=useState({
@@ -36,22 +37,31 @@ export default function Signup() {
     return Object.keys(err).length===0;
   };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
-  if (validate()) {
+  try {
+    const responce = await axios.post("http://localhost:5000/api/users", formData);
 
-    // Save to Local Storage
-    localStorage.setItem(
-      "user",
-      JSON.stringify(formData)
-    );
 
-    alert("Signup Successful");
+alert(responce.data.message);
 
-    console.log(formData);
+console.log(responce.data);
+
+// clear form data
+setFormData({
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: ""
+});
+
+  } catch (error) {
+    console.error(error);
+    alert(error.response.data.message || "An error occurred while creating the account.");
   }
-};
+}
 
   const tf={
     mb:3,
