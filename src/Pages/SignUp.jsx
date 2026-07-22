@@ -48,7 +48,7 @@ const handleSubmit = async (e) => {
   try {
 
         console.log("4. Sending request...");
-    const responce = await API.post("users", formData);
+    const response = await API.post("users", formData);
 
      console.log("5. Response:", response.data);
 
