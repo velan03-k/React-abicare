@@ -39,10 +39,18 @@ export default function Signup() {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
+   console.log("1. Submit clicked");
+
     if (!validate()) return;
 
+      console.log("3. Validation passed");
+
   try {
+
+        console.log("4. Sending request...");
     const responce = await API.post("users", formData);
+
+     console.log("5. Response:", response.data);
 
 
 alert(responce.data.message);
@@ -60,6 +68,7 @@ setFormData({
 
   } catch (error) {
     console.error(error);
+       console.log("6. Error:", error);
     alert(error.response.data.message || "An error occurred while creating the account.");
   }
 }
