@@ -94,6 +94,10 @@ setFormData({
             Create <span style={{color:"#6BBAE0"}}>Account</span>
           </Typography>
 
+          <h1 style={{ color: "red" }}>
+THIS IS TEST 123456
+</h1>
+
           <Box component="form" onSubmit={handleSubmit}>
             <Box sx={{display:"flex",gap:2}}>
               <TextField fullWidth label="First Name" name="firstName" value={formData.firstName}
