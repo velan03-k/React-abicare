@@ -8,6 +8,7 @@ import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
 import API from "../Api/axios";
 export default function Signup() {
+  console.log("hi");
   const [formData,setFormData]=useState({
     firstName:"",lastName:"",email:"",
     password:"",confirmPassword:""
