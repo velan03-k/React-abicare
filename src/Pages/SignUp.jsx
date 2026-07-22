@@ -53,9 +53,9 @@ const handleSubmit = async (e) => {
      console.log("5. Response:", response.data);
 
 
-alert(responce.data.message);
+alert(responSe.data.message);
 
-console.log(responce.data);
+console.log(responSe.data);
 
 // clear form data
 setFormData({
