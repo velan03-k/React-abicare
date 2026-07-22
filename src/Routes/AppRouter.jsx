@@ -7,7 +7,7 @@ import AdminRoute from "./AdminRoute"; // change path if needed
 import Homepage from "../Pages/Home";
 import AboutPage from "../Pages/About";
 import Login from "../Pages/Login";
-import Signup from "../Pages/SignUp";
+import Signup from "../Pages/Signup";
 import ForgotPassword from "../Pages/ForgotPassword";
 
 import Dashboard from "../Pages/Admin/Dashboard";
