@@ -6,7 +6,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
-import axios from "axios";
+import API from "../Api/api";
 export default function Signup() {
   const [formData,setFormData]=useState({
     firstName:"",lastName:"",email:"",
@@ -39,8 +39,10 @@ export default function Signup() {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
+    if (!validate()) return;
+
   try {
-    const responce = await axios.post("http://localhost:5000/api/users", formData);
+    const responce = await API.post("users", formData);
 
 
 alert(responce.data.message);
