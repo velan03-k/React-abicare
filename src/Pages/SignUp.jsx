@@ -142,11 +142,22 @@ setFormData({
               }}
             />
 
-            <Button fullWidth type="submit" variant="contained"
-              sx={{mt:1,py:1.5,bgcolor:"#6BBAE0",color:"#0F172A",fontWeight:"bold","&:hover":{bgcolor:"white"}}}>
-              Create Account
-            </Button>
-
+<Button
+  fullWidth
+  type="submit"
+  variant="contained"
+  onClick={() => console.log("BUTTON CLICKED")}
+  sx={{
+    mt: 1,
+    py: 1.5,
+    bgcolor: "#6BBAE0",
+    color: "#0F172A",
+    fontWeight: "bold",
+    "&:hover": { bgcolor: "white" },
+  }}
+>
+  Create Account
+</Button>
             <Typography sx={{mt:3,textAlign:"center",color:"gray"}}>
               Already have an account?{" "}
               <Link component={RouterLink} to="/login" underline="none"
