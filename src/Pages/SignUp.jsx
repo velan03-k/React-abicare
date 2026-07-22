@@ -6,7 +6,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
-import API from "../Api/api";
+import API from "../Api/axios";
 export default function Signup() {
   const [formData,setFormData]=useState({
     firstName:"",lastName:"",email:"",
