@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../Api/axios";
 import InputAdornment from "@mui/material/InputAdornment";
 
 import {
@@ -36,6 +36,8 @@ export default function Departmentsadmin() {
 
   const [search, setSearch] = useState("");
 
+  const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -49,8 +51,8 @@ export default function Departmentsadmin() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/departments"
+        const response = await API.get(
+          "departments"
         );
 setDepartments(response.data || []);      } catch (error) {
         console.error("Failed to load departments:", error);
@@ -70,21 +72,39 @@ setDepartments(response.data || []);      } catch (error) {
 const handleAddDepartment = async () => {
   try {
 
-    const response = await axios.post(
-      "http://localhost:5000/api/departments",
-      form
-    );
+    if (editingId) {
 
+      const response = await API.put(
+        `departments/${editingId}`,
+        form
+      );
 
-    console.log("POST Response:", response.data);
+      setDepartments((prevDepartments) =>
+        prevDepartments.map((department) =>
+          department._id === editingId
+            ? response.data.department
+            : department
+        )
+      );
 
+      alert("Department updated successfully!");
 
-    setDepartments((prevDepartments = []) => [
-      ...prevDepartments,
-      response.data
-    ]);
+    } else {
 
+      const response = await API.post(
+        "departments",
+        form
+      );
 
+      setDepartments((prevDepartments) => [
+        ...prevDepartments,
+        response.data.department,
+      ]);
+
+      alert("Department added successfully!");
+    }
+
+    // Reset form
     setForm({
       name: "",
       description: "",
@@ -95,23 +115,69 @@ const handleAddDepartment = async () => {
       status: "Active",
     });
 
+    setEditingId(null);
 
     setOpen(false);
 
-    alert("Department added successfully!");
+  } catch (error) {
 
-
-  } catch(error) {
-
-    console.error("Department Error:", error);
+    console.error(error);
 
     alert(
       error.response?.data?.message ||
-      "Failed to add department"
+      "Operation failed."
     );
 
   }
 };
+
+const handleEdit = (department) => {
+  setForm({
+    name: department.name,
+    description: department.description,
+    headDoctor: department.headDoctor,
+    email: department.email,
+    phone: department.phone,
+    status: department.status,
+  });
+
+  setEditingId(department._id);
+
+  setOpen(true);
+};
+
+const handleDelete = async (id) => {
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this department?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await API.delete(`departments/${id}`);
+
+    setDepartments((prevDepartments) =>
+      prevDepartments.filter(
+        (department) => department._id !== id
+      )
+    );
+
+    alert("Department deleted successfully!");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to delete department."
+    );
+  }
+};
+
+
 const filteredDepartments = (departments || []).filter((department) =>
   (department.name || "")
     .toLowerCase()
@@ -269,13 +335,19 @@ const textFieldStyle = {
                   </TableCell>
 
                   <TableCell align="center">
-                    <IconButton color="primary">
-                      <EditRoundedIcon />
-                    </IconButton>
+<IconButton
+  color="primary"
+  onClick={() => handleEdit(department)}
+>
+  <EditRoundedIcon />
+</IconButton>
 
-                    <IconButton color="error">
-                      <DeleteRoundedIcon />
-                    </IconButton>
+<IconButton
+  color="error"
+  onClick={() => handleDelete(department._id)}
+>
+  <DeleteRoundedIcon />
+</IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -307,8 +379,7 @@ const textFieldStyle = {
       color: "#38BDF8",
     }}
   >
-    Add New Department
-  </DialogTitle>
+{editingId ? "Edit Department" : "Add Department"}  </DialogTitle>
 
   <DialogContent sx={{ mt: 2 }}>
     <Grid container spacing={3}>
@@ -424,8 +495,7 @@ const textFieldStyle = {
               },
             }}
           >
-            Add Department
-          </Button>
+{editingId ? "Update Department" : "Add Department"}          </Button>
         </DialogActions>
       </Dialog>
     </Box>

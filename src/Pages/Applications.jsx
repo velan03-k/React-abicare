@@ -17,15 +17,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendIcon from "@mui/icons-material/Send";
 import bookingHeroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.png";
+import axios from "axios";
+import API from "../Api/axios";
+import { useEffect } from "react";
 
-const DEPARTMENTS = [
-  { value: "cardiology", label: "Cardiology" },
-  { value: "neurology", label: "Neurology" },
-  { value: "orthopedics", label: "Orthopedics" },
-  { value: "pediatrics", label: "Pediatrics" },
-  { value: "dermatology", label: "Dermatology" },
-  { value: "gynecology", label: "Gynecology" },
-];
+
 
 const HELP_CONTACTS = [
   { icon: PhoneIcon, label: "Phone", value: "1-800-123-4567" },
@@ -89,10 +85,54 @@ function Applications({ onBookingSubmit, onEnquirySubmit }) {
     email: "",
     phone: "",
     department: "",
+    doctor : "",
     date: "",
     time: "",
     message: "",
+
   });
+
+const [departments, setDepartments] = useState([]);
+const [doctors, setDoctors] = useState([]);
+
+const [department, setDepartment] = useState("");
+const [doctor, setDoctor] = useState("");
+
+  useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+const response = await API.get(
+  "/departments"
+);
+
+      setDepartments(response.data);
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  };
+
+  fetchDepartments();
+}, []);
+
+useEffect(() => {
+  if (!department) {
+    setDoctors([]);
+    return;
+  }
+
+  const fetchDoctors = async () => {
+    try {
+     const response = await API.get(
+  `/doctors/department/${department}`
+);
+      setDoctors(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchDoctors();
+}, [department]);
 
   const [enquiry, setEnquiry] = useState({
     name: "",
@@ -106,10 +146,36 @@ function Applications({ onBookingSubmit, onEnquirySubmit }) {
   const handleEnquiryChange = (field) => (e) =>
     setEnquiry((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleBookingSubmit = (e) => {
-    e.preventDefault();
-    onBookingSubmit?.(booking);
-  };
+const handleBookingSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    console.log(booking);
+const response = await API.post(
+  "/applications",
+  booking
+);
+    console.log("Application Created:", response.data);
+
+    alert("Appointment booked successfully!");
+
+    // Reset form
+    setBooking({
+      name: "",
+      email: "",
+      phone: "",
+      department: "",
+      doctor: "",
+      date: "",
+      time: "",
+      message: "",
+    });
+
+  } catch (error) {
+    console.error("Booking Error:", error.response?.data);
+  alert(error.response?.data?.message || "Failed to book appointment");
+  }
+};
 
   const handleEnquirySubmit = (e) => {
     e.preventDefault();
@@ -242,181 +308,270 @@ function Applications({ onBookingSubmit, onEnquirySubmit }) {
         </Grid>
       </Box>
 
-      {/* BOOKING FORM SECTION */}
-      <Box id="booking-form" sx={{ borderTop: "1px solid #1E293B", py: 10 }}>
-        <Box sx={{ maxWidth: "900px", mx: "auto", px: 8 }}>
-          <Box sx={{ textAlign: "center", mb: 6 }}>
-            <Box
-              sx={{
-                display: "inline-block",
-                backgroundColor: "rgba(107,186,224,0.2)",
-                color: "#6BBAE0",
-                px: 3,
-                py: 1,
-                borderRadius: "999px",
-                fontSize: "14px",
-                fontWeight: "bold",
-                border: "1px solid rgba(107,186,224,0.4)",
-              }}
-            >
-              Schedule Your Visit
-            </Box>
+   <Box
+  id="booking-form"
+  sx={{
+    py: 10,
+    display: "flex",
+    justifyContent: "center",
+    px: 2,
+  }}
+>
+  <Box
+    sx={{
+      width: "100%",
+      maxWidth: "1100px",
+      borderRadius: "20px",
+      overflow: "hidden",
+      border: "1px solid rgba(107,186,224,0.25)",
+      background:
+        "linear-gradient(180deg,#111827 0%,#0F172A 100%)",
+      boxShadow: "0 25px 60px rgba(0,0,0,.45)",
+    }}
+  >
+    {/* Header */}
+    <Box
+      sx={{
+        textAlign: "center",
+        py: 6,
+        px: 4,
+        borderBottom: "1px solid rgba(107,186,224,.15)",
+      }}
+    >
+      <EventAvailableIcon
+        sx={{
+          fontSize: 42,
+          color: "#6BBAE0",
+          mb: 2,
+        }}
+      />
 
-            <Typography
-              variant="h4"
-              sx={{ mt: 3, color: "white", fontWeight: "bold" }}
-            >
-              Book an <Box component="span" sx={{ color: "#6BBAE0" }}>Appointment</Box>
-            </Typography>
-
-            <Typography sx={{ mt: 2, color: "#D1D5DB", lineHeight: 1.8 }}>
-              Fill in the details below and our team will confirm your
-              appointment shortly.
-            </Typography>
-          </Box>
-
-          <Box
-            component="form"
-            onSubmit={handleBookingSubmit}
-            sx={{
-              backgroundColor: "#1E293B",
-              borderRadius: "16px",
-              p: { xs: 4, md: 6 },
-              border: "1px solid rgba(107,186,224,0.2)",
-            }}
-          >
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Full Name"
-                  value={booking.name}
-                  onChange={handleBookingChange("name")}
-                  sx={textFieldSx}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  required
-                  type="email"
-                  label="Email Address"
-                  value={booking.email}
-                  onChange={handleBookingChange("email")}
-                  sx={textFieldSx}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  required
-                  type="tel"
-                  label="Phone Number"
-                  value={booking.phone}
-                  onChange={handleBookingChange("phone")}
-                  sx={textFieldSx}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Department"
-                  value={booking.department}
-                  onChange={handleBookingChange("department")}
-                  sx={textFieldSx}
-                >
-                  <MenuItem value="">Select Department</MenuItem>
-                  {DEPARTMENTS.map((dept) => (
-                    <MenuItem key={dept.value} value={dept.value}>
-                      {dept.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  required
-                  type="date"
-                  label="Preferred Date"
-                  value={booking.date}
-                  onChange={handleBookingChange("date")}
-                  InputLabelProps={{ shrink: true }}
-                  sx={textFieldSx}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  required
-                  type="time"
-                  label="Preferred Time"
-                  value={booking.time}
-                  onChange={handleBookingChange("time")}
-                  InputLabelProps={{ shrink: true }}
-                  sx={textFieldSx}
-                />
-              </Grid>
-
-              <Grid size={12}>
-                <TextField
-                  fullWidth
-                  required
-                  multiline
-                  rows={4}
-                  label="Reason for Visit"
-                  value={booking.message}
-                  onChange={handleBookingChange("message")}
-                  sx={textFieldSx}
-                />
-              </Grid>
-            </Grid>
-
-            <Button
-              type="submit"
-              fullWidth
-              startIcon={<EventAvailableIcon />}
-              sx={{
-                mt: 4,
-                backgroundColor: "#6BBAE0",
-                color: "#0F172A",
-                py: 2,
-                borderRadius: "8px",
-                textTransform: "none",
-                fontWeight: "bold",
-                fontSize: "18px",
-                "&:hover": { backgroundColor: "white" },
-              }}
-            >
-              Book Appointment
-            </Button>
-
-            <Typography
-              sx={{
-                mt: 2,
-                textAlign: "center",
-                color: "#94A3B8",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 0.5,
-              }}
-            >
-              <LockIcon sx={{ fontSize: 16, color: "#6BBAE0" }} />
-              Your information is secure and confidential
-            </Typography>
-          </Box>
+      <Typography
+        variant="h3"
+        sx={{
+          color: "#fff",
+          fontWeight: 700,
+        }}
+      >
+        Book an{" "}
+        <Box component="span" sx={{ color: "#6BBAE0" }}>
+          Appointment
         </Box>
-      </Box>
+      </Typography>
+
+      <Typography
+        sx={{
+          mt: 2,
+          color: "#CBD5E1",
+          fontSize: "1.05rem",
+        }}
+      >
+        Fill in the details below and our team will confirm your
+        appointment shortly.
+      </Typography>
+    </Box>
+
+    {/* Form */}
+    <Box
+      component="form"
+      onSubmit={handleBookingSubmit}
+      sx={{
+        p: { xs: 3, md: 5 },
+      }}
+    >
+      <Grid container spacing={3}>
+        {/* Name */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            fullWidth
+            required
+            label="Full Name"
+            value={booking.name}
+            onChange={handleBookingChange("name")}
+            sx={textFieldSx}
+          />
+        </Grid>
+
+        {/* Email */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            fullWidth
+            required
+            type="email"
+            label="Email Address"
+            value={booking.email}
+            onChange={handleBookingChange("email")}
+            sx={textFieldSx}
+          />
+        </Grid>
+
+        {/* Phone */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            fullWidth
+            required
+            type="tel"
+            label="Phone Number"
+            value={booking.phone}
+            onChange={handleBookingChange("phone")}
+            sx={textFieldSx}
+          />
+        </Grid>
+
+        {/* Department */}
+    {/* Department */}
+<Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    select
+    fullWidth
+    required
+    label="Department"
+    value={booking.department}
+    onChange={(e) => {
+      setBooking({
+        ...booking,
+        department: e.target.value,
+        doctor: "",
+      });
+
+      setDepartment(e.target.value); // Keep this if you use it to fetch doctors
+      setDoctor("");
+    }}
+    sx={textFieldSx}
+  >
+    <MenuItem value="">Select Department</MenuItem>
+
+    {departments.map((dept) => (
+      <MenuItem key={dept._id} value={dept._id}>
+        {dept.name}
+      </MenuItem>
+    ))}
+  </TextField>
+</Grid>
+
+        {/* Doctor */}
+{/* Doctor */}
+<Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    select
+    fullWidth
+    required
+    label="Doctor"
+    value={booking.doctor}
+    onChange={(e) => {
+      setBooking({
+        ...booking,
+        doctor: e.target.value,
+      });
+
+      setDoctor(e.target.value);
+    }}
+    disabled={!department}
+    sx={textFieldSx}
+  >
+    <MenuItem value="">Select Doctor</MenuItem>
+
+    {doctors.map((doc) => (
+      <MenuItem key={doc._id} value={doc._id}>
+        {doc.name}
+      </MenuItem>
+    ))}
+  </TextField>
+</Grid>
+
+        {/* Date */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            fullWidth
+            required
+            type="date"
+            value={booking.date}
+            onChange={handleBookingChange("date")}
+            InputLabelProps={{ shrink: true }}
+            inputProps={{
+              placeholder: "dd/mm/yyyy",
+            }}
+            sx={textFieldSx}
+          />
+        </Grid>
+
+        {/* Time */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            fullWidth
+            required
+            type="time"
+            value={booking.time}
+            onChange={handleBookingChange("time")}
+            InputLabelProps={{ shrink: true }}
+            sx={textFieldSx}
+          />
+        </Grid>
+
+        {/* Reason */}
+        <Grid size={12}>
+          <TextField
+            fullWidth
+            required
+            multiline
+            rows={5}
+            label="Reason for Visit"
+            value={booking.message}
+            onChange={handleBookingChange("message")}
+            sx={textFieldSx}
+          />
+        </Grid>
+      </Grid>
+
+      <Button
+        type="submit"
+        fullWidth
+        startIcon={<EventAvailableIcon />}
+        sx={{
+          mt: 5,
+          py: 2,
+          maxWidth: "420px",
+          mx: "auto",
+          display: "flex",
+          borderRadius: "10px",
+          background:
+            "linear-gradient(90deg,#3B82F6,#2563EB)",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: "18px",
+          textTransform: "none",
+          boxShadow: "0 10px 30px rgba(37,99,235,.35)",
+          "&:hover": {
+            background:
+              "linear-gradient(90deg,#60A5FA,#3B82F6)",
+          },
+        }}
+      >
+        Book Appointment
+      </Button>
+
+      <Typography
+        sx={{
+          mt: 2,
+          color: "#94A3B8",
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <LockIcon
+          sx={{
+            color: "#6BBAE0",
+            fontSize: 17,
+          }}
+        />
+        Your information is secure and confidential
+      </Typography>
+    </Box>
+  </Box>
+</Box>
 
       {/* NEED HELP SECTION */}
       <Box sx={{ borderTop: "1px solid #1E293B", py: 10 }}>

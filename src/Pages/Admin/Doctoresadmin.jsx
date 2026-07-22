@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+
 import InputAdornment from "@mui/material/InputAdornment";
 
 import {
@@ -28,6 +28,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import API from "../../Api/axios";
 
 export default function Doctoresadmin() {
   const [doctors, setDoctors] = useState([]);
@@ -37,6 +38,8 @@ export default function Doctoresadmin() {
   const [open, setOpen] = useState(false);
 
   const [search, setSearch] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -52,7 +55,7 @@ export default function Doctoresadmin() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/doctors");
+        const response = await API.get("doctors");
         setDoctors(response.data.doctors);
       } catch (error) {
         console.error("Failed to load doctors:", error);
@@ -65,8 +68,8 @@ export default function Doctoresadmin() {
   useEffect(() => {
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/departments"
+      const response = await API.get(
+        "departments"
       );
 
       setDepartments(response.data);
@@ -86,42 +89,116 @@ export default function Doctoresadmin() {
   };
 
   const handleAddDoctor = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/doctors",
+  try {
+
+    if (editingId) {
+
+      const response = await API.put(
+        `doctors/${editingId}`,
         form
       );
 
-      // Add the newly created doctor from the server
-      setDoctors((prevDoctors) => [...prevDoctors, response.data]);
-      console.log("POST Response:", response.data);
+      setDoctors((prevDoctors) =>
+        prevDoctors.map((doctor) =>
+          doctor._id === editingId
+            ? response.data.doctor
+            : doctor
+        )
+      );
 
+      alert("Doctor updated successfully!");
 
-      // Reset form
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        department: "",
-        qualification: "",
-        experience: "",
-        fee: "",
-        status: "Active",
-      });
+    } else {
 
-      setOpen(false);
+      const response = await API.post(
+        "doctors",
+        form
+      );
+
+      setDoctors((prevDoctors) => [
+        ...prevDoctors,
+        response.data.doctor,
+      ]);
 
       alert("Doctor added successfully!");
-    } catch (error) {
-      console.error(error);
-
-      alert(error.response?.data?.message || "Failed to add doctor.");
     }
-  };
+
+    // Reset form
+    setForm({
+      name: "",
+      email: "",
+      phone: "",
+      department: "",
+      qualification: "",
+      experience: "",
+      fee: "",
+      status: "Active",
+    });
+
+    setEditingId(null);
+
+    setOpen(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(error.response?.data?.message || "Operation failed.");
+
+  }
+};
 
 const filteredDoctors = doctors.filter((doctor) =>
   (doctor.name || "").toLowerCase().includes(search.toLowerCase())
 );
+
+const handleEdit = (doctor) => {
+  setForm({
+    name: doctor.name,
+    email: doctor.email,
+    phone: doctor.phone,
+    department: doctor.department,
+    qualification: doctor.qualification,
+    experience: doctor.experience,
+    fee: doctor.fee,
+    status: doctor.status,
+  });
+
+  setEditingId(doctor._id);
+
+  setOpen(true);
+};
+
+const handleDelete = async (id) => {
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this doctor?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await API.delete(`doctors/${id}`);
+
+    setDoctors((prevDoctors) =>
+      prevDoctors.filter(
+        (doctor) => doctor._id !== id
+      )
+    );
+
+    alert("Doctor deleted successfully!");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to delete doctor."
+    );
+  }
+};
 
 const textFieldStyle = {
   "& .MuiInputLabel-root": {
@@ -279,14 +356,19 @@ const textFieldStyle = {
                     {doctor.fee}
                   </TableCell>
 
-                  <TableCell align="center">
-                    <IconButton color="primary">
-                      <EditRoundedIcon />
-                    </IconButton>
-
-                    <IconButton color="error">
-                      <DeleteRoundedIcon />
-                    </IconButton>
+<TableCell align="center">
+  <IconButton
+    color="primary"
+    onClick={() => handleEdit(doctor)}
+  >
+    <EditRoundedIcon />
+  </IconButton>
+<IconButton
+  color="error"
+  onClick={() => handleDelete(doctor._id)}
+>
+  <DeleteRoundedIcon />
+</IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -296,7 +378,7 @@ const textFieldStyle = {
       </Card>
 {/* Add Doctor Dialog */}
 
-< Dialog
+<Dialog
   open={open}
   onClose={() => setOpen(false)}
   fullWidth
@@ -318,7 +400,7 @@ const textFieldStyle = {
       color: "#38BDF8",
     }}
   >
-    Add New Doctor
+    {editingId ? "Edit Doctor" : "Add New Doctor"}
   </DialogTitle>
 
   <DialogContent sx={{ mt: 2 }}>
@@ -358,20 +440,20 @@ const textFieldStyle = {
 
       <Grid size={{ xs: 12, md: 6 }}>
         <TextField
-  select
-  fullWidth
-  label="Department"
-  name="department"
-  value={form.department}
-  onChange={handleChange}
-  sx={textFieldStyle}
->
-  {departments.map((dept) => (
-    <MenuItem key={dept._id} value={dept._id}>
-      {dept.name}
-    </MenuItem>
-  ))}
-</TextField>
+          select
+          fullWidth
+          label="Department"
+          name="department"
+          value={form.department}
+          onChange={handleChange}
+          sx={textFieldStyle}
+        >
+          {departments.map((dept) => (
+            <MenuItem key={dept._id} value={dept._id}>
+              {dept.name}
+            </MenuItem>
+          ))}
+        </TextField>
       </Grid>
 
       <Grid size={{ xs: 12, md: 6 }}>
@@ -425,37 +507,46 @@ const textFieldStyle = {
     </Grid>
   </DialogContent>
 
+  <DialogActions sx={{ p: 3 }}>
+    <Button
+      onClick={() => {
+        setOpen(false);
+        setEditingId(null);
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          department: "",
+          qualification: "",
+          experience: "",
+          fee: "",
+          status: "Active",
+        });
+      }}
+      sx={{
+        color: "#e3e5e8",
+      }}
+    >
+      Cancel
+    </Button>
 
-
-
-        <DialogActions sx={{ p: 3 }}>
-          <Button
-            onClick={() => setOpen(false)}
-            sx={{
-              color: "#e3e5e8",
-            }}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={handleAddDoctor}
-            sx={{
-              bgcolor: "#38BDF8",
-              textTransform: "none",
-              px: 3,
-              borderRadius: 3,
-              "&:hover": {
-                bgcolor: "#0EA5E9",
-              },
-            }}
-          >
-            Add Doctor
-          </Button>
-          console.log(doctors);
-        </DialogActions>
-      </Dialog>
+    <Button
+      variant="contained"
+      onClick={handleAddDoctor}
+      sx={{
+        bgcolor: "#38BDF8",
+        textTransform: "none",
+        px: 3,
+        borderRadius: 3,
+        "&:hover": {
+          bgcolor: "#0EA5E9",
+        },
+      }}
+    >
+      {editingId ? "Update Doctor" : "Add Doctor"}
+    </Button>
+  </DialogActions>
+</Dialog>
     </Box>
   );
 }

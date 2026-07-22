@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import UserLayout from "../Layouts/UserLayout";
 import AdminLayout from "../Layouts/AdminLayout";
+import AdminRoute from "./AdminRoute"; // change path if needed
 
 import Homepage from "../Pages/Home";
 import AboutPage from "../Pages/About";
@@ -15,6 +16,7 @@ import Doctors from "../Pages/Doctors";
 import Departments from "../Pages/Departments";
 import Applications from "../Pages/Applications";
 import Departmentsadmin from "../Pages/Admin/Departmentsadmin";
+import Applicationsadmin from "../Pages/Admin/Applicationadmin";
 function AppRouter() {
   return (
     <Routes>
@@ -32,11 +34,17 @@ function AppRouter() {
       </Route>
 
       {/* Admin Routes */}
-      <Route element={<AdminLayout />}>
-        <Route path="/admin" element={<Homepage />}/>
+<Route
+  element={
+    <AdminRoute>
+      <AdminLayout />
+    </AdminRoute>
+  }
+>        <Route path="/admin" element={<Homepage />}/>
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/doctores" element={<Doctoresadmin />} />
         <Route path="/admin/departments" element={<Departmentsadmin />} />
+        <Route path="/admin/application" element={<Applicationsadmin />}/>
       </Route>
 
     </Routes>

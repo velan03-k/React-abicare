@@ -13,8 +13,11 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+   const navigate = useNavigate();
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -31,57 +34,91 @@ function Login() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-      try {
-        console.log(loginData);
-    const responce = await axios.post("http://localhost:5000/api/users/login", loginData);
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/users/login",
+      {
+        email: loginData.email,
+        password: loginData.password,
+      }
+    );
+
+    alert(response.data.message);
+
+    console.log(response.data);
 
 
-alert(responce.data.message);
+    // Store JWT token only
+    localStorage.setItem(
+      "token",
+      response.data.token
+    );
 
-console.log(responce.data);
 
-// clear form data
-setLoginData({
-  email: "",
-  password: "",
-  remember: false
-});
+    // Store role for frontend route checking
+    localStorage.setItem(
+      "role",
+      response.data.user.role
+    );
+
+
+    // Redirect based on role
+    if (response.data.user.role === "admin") {
+        console.log("Navigating to admin");
+
+      navigate("/admin");
+
+    } else {
+
+      navigate("/");
+
+    }
+
+
+    setLoginData({
+      email: "",
+      password: "",
+      remember: false,
+    });
+
 
   } catch (error) {
+
     console.error(error);
-    alert(error.response.data.message || "Login failed.");
+
+    alert(
+      error.response?.data?.message || "Login failed."
+    );
+
   }
-}
-
-    // Backend Login API
-
+};
   const textFieldStyle = {
-    "& .MuiOutlinedInput-root": {
-      color: "white",
+  "& .MuiOutlinedInput-root": {
+    color: "white",
 
-      "& fieldset": {
-        borderColor: "rgba(107,186,224,.3)",
-      },
-
-      "&:hover fieldset": {
-        borderColor: "#6BBAE0",
-      },
-
-      "&.Mui-focused fieldset": {
-        borderColor: "#6BBAE0",
-      },
+    "& fieldset": {
+      borderColor: "rgba(107,186,224,.3)",
     },
 
-    "& .MuiInputLabel-root": {
-      color: "#6BBAE0",
+    "&:hover fieldset": {
+      borderColor: "#6BBAE0",
     },
 
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: "#6BBAE0",
+    "&.Mui-focused fieldset": {
+      borderColor: "#6BBAE0",
     },
-  };
+  },
+
+  "& .MuiInputLabel-root": {
+    color: "#6BBAE0",
+  },
+
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#6BBAE0",
+  },
+};
 
   return (
     <AuthLayout>

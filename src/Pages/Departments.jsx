@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../Api/axios";
 
 // Import images (adjust paths as needed)
 import heroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.png";
@@ -29,9 +29,9 @@ export default function Departments() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/departments"
-        );
+const response = await API.get(
+  "/departments"
+);
         console.log("Department Response:", response.data);
         setDepartments(response.data || []);
       } catch (error) {
@@ -53,10 +53,10 @@ export default function Departments() {
   // Add Department
   const handleAddDepartment = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/departments",
-        form
-      );
+    const response = await API.post(
+  "/departments",
+  form
+);
 
       console.log("POST Response:", response.data);
 

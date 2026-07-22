@@ -21,7 +21,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import TwitterIcon from "@mui/icons-material/Twitter"; // swap for the X icon if your @mui/icons-material version has it
 import doctorsHeroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.png";
-import axios from "axios";
+import API from "../Api/axios";
 
 // Static list of departments used for the filter dropdown (page copy, not patient/doctor data)
 
@@ -90,8 +90,8 @@ const [departments, setDepartments] = useState([]);
 useEffect(() => {
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/departments"
+      const response = await API.get(
+        "/departments"
       );
 
       setDepartments(response.data);
@@ -104,8 +104,8 @@ useEffect(() => {
 }, []);useEffect(() => {
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/departments"
+      const response = await API.get(
+        "/departments"
       );
 
       setDepartments(response.data);
@@ -120,8 +120,8 @@ useEffect(() => {
 useEffect(() => {
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/doctors"
+      const response = await API.get(
+        "/doctors"
       );
 
       console.log(response.data);
