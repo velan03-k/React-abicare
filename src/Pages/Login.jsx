@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
-import axios from "axios";
+import API from "../Api/axios"
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -37,8 +37,8 @@ function Login() {
   event.preventDefault();
 
   try {
-    const response = await axios.post(
-      "http://localhost:5000/api/users/login",
+    const response = await API.post(
+      "login",
       {
         email: loginData.email,
         password: loginData.password,
