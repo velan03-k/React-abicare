@@ -10,7 +10,6 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -43,13 +42,13 @@ const STATS = [
   { value: "100%", label: "Patient Satisfaction" },
 ];
 
-const SOCIAL_LINKS = [
-  { icon: FacebookIcon, href: "https://facebook.com" },
-  { icon: InstagramIcon, href: "https://instagram.com" },
-  { icon: TwitterIcon, href: "https://x.com" },
-  { icon: LinkedInIcon, href: "https://linkedin.com" },
-  { icon: YouTubeIcon, href: "https://youtube.com" },
-];
+// const SOCIAL_LINKS = [
+//   { icon: FacebookIcon, href: "https://facebook.com" },
+//   { icon: InstagramIcon, href: "https://instagram.com" },
+//   { icon: TwitterIcon, href: "https://x.com" },
+//   { icon: LinkedInIcon, href: "https://linkedin.com" },
+//   { icon: YouTubeIcon, href: "https://youtube.com" },
+// ];
 
 function getInitials(name = "") {
   return name

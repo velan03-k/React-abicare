@@ -17,7 +17,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendIcon from "@mui/icons-material/Send";
 import bookingHeroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.png";
-import axios from "axios";
 import API from "../Api/axios";
 import { useEffect } from "react";
 

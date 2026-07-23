@@ -1,6 +1,5 @@
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -14,8 +13,8 @@ import heroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.p
 
 export default function Departments() {
   const [departments, setDepartments] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  // const [open, setOpen] = useState(false);
+  // const [search, setSearch] = useState("");
 
   const [form, setForm] = useState({
     name: "",
