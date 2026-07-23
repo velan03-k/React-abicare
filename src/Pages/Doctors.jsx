@@ -14,11 +14,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-import TwitterIcon from "@mui/icons-material/Twitter"; // swap for the X icon if your @mui/icons-material version has it
 import doctorsHeroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.png";
 import API from "../Api/axios";
 
@@ -42,13 +37,7 @@ const STATS = [
   { value: "100%", label: "Patient Satisfaction" },
 ];
 
-// const SOCIAL_LINKS = [
-//   { icon: FacebookIcon, href: "https://facebook.com" },
-//   { icon: InstagramIcon, href: "https://instagram.com" },
-//   { icon: TwitterIcon, href: "https://x.com" },
-//   { icon: LinkedInIcon, href: "https://linkedin.com" },
-//   { icon: YouTubeIcon, href: "https://youtube.com" },
-// ];
+
 
 function getInitials(name = "") {
   return name

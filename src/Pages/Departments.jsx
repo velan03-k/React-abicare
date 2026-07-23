@@ -13,8 +13,8 @@ import heroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.p
 
 export default function Departments() {
   const [departments, setDepartments] = useState([]);
-  // const [open, setOpen] = useState(false);
-  // const [search, setSearch] = useState("");
+  const [setOpen] = useState(false);
+  const [search] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -42,12 +42,12 @@ const response = await API.get(
   }, []);
 
   // Handle Input Change
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // const handleChange = (e) => {
+  //   setForm({
+  //     ...form,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
 
   // Add Department
   const handleAddDepartment = async () => {
