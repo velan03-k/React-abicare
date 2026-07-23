@@ -13,16 +13,7 @@ import heroImage from "../Assets/Gemini_Generated_Image_ei62snei62snei62-clean.p
 
 export default function Departments() {
   const [departments, setDepartments] = useState([]);
-  const [setOpen] = useState(false);
-  const [search] = useState("");
 
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    email: "",
-    phone: "",
-    status: "Active",
-  });
 
   // Fetch Departments
   useEffect(() => {
@@ -50,41 +41,7 @@ const response = await API.get(
   // };
 
   // Add Department
-
-    try {
-    const response = await API.post(
-  "/departments",
-  form
-);
-
-      console.log("POST Response:", response.data);
-
-      setDepartments((prevDepartments) => [
-        ...prevDepartments,
-        response.data,
-      ]);
-
-      setForm({
-        name: "",
-        description: "",
-        email: "",
-        phone: "",
-        status: "Active",
-      });
-
-      setOpen(false);
-      alert("Department added successfully!");
-    } catch (error) {
-      console.error(error);
-      alert(
-        error.response?.data?.message || "Failed to add department"
-      );
-    }
-
-  // Search
-  // const filteredDepartments = (departments || []).filter((department) =>
-  //   (department.name || "").toLowerCase().includes(search.toLowerCase())
-  // );
+  
 
   return (
     <Box sx={{ bgcolor: "#0F172A", minHeight: "100vh", color: "#fff" }}>
