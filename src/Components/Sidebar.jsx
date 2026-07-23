@@ -8,6 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Divider from "@mui/material/Divider";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
@@ -35,6 +36,9 @@ const EXPANDED_WIDTH = 240;
 const COLLAPSED_WIDTH = 76;
 
 function Sidebar({ activeItem = "Dashboard", onSelect }) {
+
+  const navigate = useNavigate();
+const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -81,16 +85,14 @@ function Sidebar({ activeItem = "Dashboard", onSelect }) {
 
       <List sx={{ px: 1.25 }}>
         {navItems.map((item) => {
-          const active = item.label === activeItem;
-          return (
+const active = location.pathname === item.path;          return (
             <Tooltip
               key={item.label}
               title={collapsed ? item.label : ""}
               placement="right"
             >
               <ListItemButton
-                onClick={() => onSelect && onSelect(item.label)}
-                sx={{
+onClick={() => navigate(item.path)}                sx={{
                   borderRadius: "14px",
                   mb: 0.75,
                   justifyContent: collapsed ? "center" : "flex-start",
