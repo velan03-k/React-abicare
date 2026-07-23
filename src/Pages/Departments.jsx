@@ -50,7 +50,7 @@ const response = await API.get(
   // };
 
   // Add Department
-  const handleAddDepartment = async () => {
+
     try {
     const response = await API.post(
   "/departments",
@@ -80,12 +80,11 @@ const response = await API.get(
         error.response?.data?.message || "Failed to add department"
       );
     }
-  };
 
   // Search
-  const filteredDepartments = (departments || []).filter((department) =>
-    (department.name || "").toLowerCase().includes(search.toLowerCase())
-  );
+  // const filteredDepartments = (departments || []).filter((department) =>
+  //   (department.name || "").toLowerCase().includes(search.toLowerCase())
+  // );
 
   return (
     <Box sx={{ bgcolor: "#0F172A", minHeight: "100vh", color: "#fff" }}>

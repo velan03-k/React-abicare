@@ -95,7 +95,7 @@ const [departments, setDepartments] = useState([]);
 const [doctors, setDoctors] = useState([]);
 
 const [department, setDepartment] = useState("");
-const [doctor, setDoctor] = useState("");
+const [setDoctor] = useState("");
 
   useEffect(() => {
   const fetchDepartments = async () => {
