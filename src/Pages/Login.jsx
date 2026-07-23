@@ -38,7 +38,7 @@ function Login() {
 
   try {
     const response = await API.post(
-      "login",
+      "users/login",
       {
         email: loginData.email,
         password: loginData.password,
