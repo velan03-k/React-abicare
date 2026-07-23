@@ -8,7 +8,6 @@ import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../Components/AuthLayout";
 import API from "../Api/axios";
 export default function Signup() {
-  console.log("hi");
   const [formData,setFormData]=useState({
     firstName:"",lastName:"",email:"",
     password:"",confirmPassword:""
@@ -94,9 +93,7 @@ setFormData({
             Create <span style={{color:"#6BBAE0"}}>Account</span>
           </Typography>
 
-          <h1 style={{ color: "red" }}>
-THIS IS TEST 123456
-</h1>
+        
 
           <Box component="form" onSubmit={handleSubmit}>
             <Box sx={{display:"flex",gap:2}}>

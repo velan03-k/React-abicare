@@ -67,8 +67,8 @@ const handleMenuClose = () => {
   <Button color="inherit" href="#">Home</Button>
   <Button color="inherit" href="about">About Us</Button>
   <Button color="inherit" href="doctors">Doctors</Button>
-  <Button color="inherit">Departments</Button>
-  <Button color="inherit">Applications</Button>
+  <Button color="inherit" href="departments">Departments</Button>
+  <Button color="inherit" href="applications">Applications</Button>
 <>
   <IconButton
     onClick={handleMenuOpen}

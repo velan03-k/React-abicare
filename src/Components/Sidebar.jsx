@@ -22,13 +22,13 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 // import { href } from "react-router-dom";
 
 const navItems = [
-  { label: "Dashboard", icon: <DashboardRoundedIcon /> },
-  { label: "Doctors", icon: <LocalHospitalRoundedIcon /> },
-  { label: "Patients", icon: <PeopleAltRoundedIcon /> },
-  { label: "Appointments", icon: <EventAvailableRoundedIcon /> },
-  { label: "Departments", icon: <AccountTreeRoundedIcon /> },
-  { label: "Reports", icon: <AssessmentRoundedIcon /> },
-  { label: "Settings", icon: <SettingsRoundedIcon /> },
+  { label: "Dashboard", icon: <DashboardRoundedIcon />, path: "/admin/dashboard" },
+  { label: "Doctors", icon: <LocalHospitalRoundedIcon />, path: "/admin/doctores" },
+  { label: "Patients", icon: <PeopleAltRoundedIcon />, path: "/admin/patients" },
+  { label: "Appointments", icon: <EventAvailableRoundedIcon />, path: "/admin/application" },
+  { label: "Departments", icon: <AccountTreeRoundedIcon />, path: "/admin/departments" },
+  { label: "Reports", icon: <AssessmentRoundedIcon />, path: "/admin/reports" },
+  { label: "Settings", icon: <SettingsRoundedIcon />, path: "/admin/settings" },
 ];
 
 const EXPANDED_WIDTH = 240;
