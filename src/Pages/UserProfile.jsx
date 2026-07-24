@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../Api/axios";
+import API from "../Api/axios";
 import {
   Avatar,
   Box,
