@@ -21,6 +21,8 @@ const open = Boolean(anchorEl);
 
 const navigate = useNavigate();
 
+const token = localStorage.getItem("token");
+
 const handleMenuOpen = (event) => {
   setAnchorEl(event.currentTarget);
 };
@@ -85,10 +87,33 @@ const handleMenuClose = () => {
   </IconButton>
 
   <Menu
-    anchorEl={anchorEl}
-    open={open}
-    onClose={handleMenuClose}
-  >
+  anchorEl={anchorEl}
+  open={open}
+  onClose={handleMenuClose}
+>
+  {token ? (
+    <>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          navigate("/profile");
+        }}
+      >
+        Profile
+      </MenuItem>
+
+      <MenuItem
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          handleMenuClose();
+          navigate("/login");
+        }}
+      >
+        Logout
+      </MenuItem>
+    </>
+  ) : (
     <MenuItem
       onClick={() => {
         handleMenuClose();
@@ -97,7 +122,8 @@ const handleMenuClose = () => {
     >
       Login
     </MenuItem>
-  </Menu>
+  )}
+</Menu>
 </>
 
 </Box>
