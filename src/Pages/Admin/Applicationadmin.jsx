@@ -14,6 +14,7 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  MenuItem,
   Paper,
   Skeleton,
   Stack,
@@ -24,11 +25,13 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
 import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
@@ -53,20 +56,49 @@ const COLORS = {
   text: "#F8FAFC",
   subtext: "#94A3B8",
   border: "rgba(148,163,184,0.12)",
+
   pending: "#F59E0B",
-  approved: "#22C55E",
+  confirmed: "#3B82F6",
+  completed: "#22C55E",
+  cancelled: "#6B7280",
   rejected: "#EF4444",
+  rescheduled: "#8B5CF6",
 };
+
+const STATUS_OPTIONS = [
+  "Pending",
+  "Confirmed",
+  "Completed",
+  "Cancelled",
+  "Rejected",
+  "Rescheduled",
+];
 
 const statusColor = (status) => {
   switch ((status || "Pending").toLowerCase()) {
-    case "approved":
-      return COLORS.approved;
+    case "confirmed":
+      return COLORS.confirmed;
+    case "completed":
+      return COLORS.completed;
+    case "cancelled":
+      return COLORS.cancelled;
     case "rejected":
       return COLORS.rejected;
+    case "rescheduled":
+      return COLORS.rescheduled;
     default:
       return COLORS.pending;
   }
+};
+// Convert a date value (ISO string / Date) into yyyy-MM-dd for date inputs
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };
 
 // ---- Summary card ----------------------------------------------------------
@@ -146,6 +178,12 @@ export default function Appointmentadmin() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
 
+  // ---- Edit dialog state -----------------------------------------------
+  const [editApp, setEditApp] = useState(null);
+  const [editForm, setEditForm] = useState({ status: "Pending", date: "", time: "" });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
@@ -199,6 +237,56 @@ export default function Appointmentadmin() {
     },
     "& .MuiInputBase-input::placeholder": { color: COLORS.subtext, opacity: 1 },
     "& .MuiSvgIcon-root": { color: COLORS.subtext },
+  };
+
+  // ---- Edit handlers -----------------------------------------------------
+  const openEdit = (app) => {
+    setEditApp(app);
+    setEditForm({
+      status: app.status || "Pending",
+      date: toDateInputValue(app.date),
+      time: app.time || "",
+    });
+    setSaveError("");
+  };
+
+  const closeEdit = () => {
+    if (saving) return;
+    setEditApp(null);
+    setSaveError("");
+  };
+
+  const handleEditChange = (field) => (e) => {
+    setEditForm((prev) => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editApp) return;
+    setSaving(true);
+    setSaveError("");
+    try {
+      const payload = {
+        status: editForm.status,
+        date: editForm.date,
+        time: editForm.time,
+      };
+      const response = await API.put(`applications/${editApp._id}`, payload);
+      const updated = response?.data || { ...editApp, ...payload };
+
+      setApplications((prev) =>
+        prev.map((a) => (a._id === editApp._id ? { ...a, ...updated } : a))
+      );
+
+      // Keep the view dialog in sync if the same appointment is open there
+      setSelected((prev) => (prev && prev._id === editApp._id ? { ...prev, ...updated } : prev));
+
+      setEditApp(null);
+    } catch (error) {
+      console.error("Failed to update appointment:", error);
+      setSaveError("Couldn't save changes. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -412,25 +500,42 @@ export default function Appointmentadmin() {
                       <StatusChip status={app.status} />
                     </TableCell>
                     <TableCell align="center" sx={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                      <Button
-                        size="small"
-                        startIcon={<VisibilityRoundedIcon />}
-                        onClick={() => setSelected(app)}
-                        sx={{
-                          color: COLORS.primary,
-                          textTransform: "none",
-                          fontWeight: 600,
-                          borderRadius: "20px",
-                          px: 1.8,
-                          border: `1px solid ${COLORS.primary}55`,
-                          "&:hover": {
-                            bgcolor: `${COLORS.primary}1a`,
-                            borderColor: COLORS.primary,
-                          },
-                        }}
-                      >
-                        View
-                      </Button>
+                      <Stack direction="row" spacing={0.5} justifyContent="center">
+                        <Tooltip title="View">
+                          <IconButton
+                            size="small"
+                            onClick={() => setSelected(app)}
+                            sx={{
+                              color: COLORS.primary,
+                              border: `1px solid ${COLORS.primary}55`,
+                              borderRadius: "10px",
+                              "&:hover": {
+                                bgcolor: `${COLORS.primary}1a`,
+                                borderColor: COLORS.primary,
+                              },
+                            }}
+                          >
+                            <VisibilityRoundedIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            size="small"
+                            onClick={() => openEdit(app)}
+                            sx={{
+                              color: COLORS.secondary,
+                              border: `1px solid ${COLORS.secondary}55`,
+                              borderRadius: "10px",
+                              "&:hover": {
+                                bgcolor: `${COLORS.secondary}1a`,
+                                borderColor: COLORS.secondary,
+                              },
+                            }}
+                          >
+                            <EditRoundedIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -521,6 +626,145 @@ export default function Appointmentadmin() {
             }}
           >
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit appointment dialog */}
+      <Dialog
+        open={Boolean(editApp)}
+        onClose={closeEdit}
+        fullWidth
+        maxWidth="sm"
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: COLORS.card,
+              borderRadius: "16px",
+              color: COLORS.text,
+              border: `1px solid ${COLORS.border}`,
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            fontWeight: 700,
+            fontSize: 20,
+            color: COLORS.text,
+          }}
+        >
+          Edit Appointment
+          <IconButton onClick={closeEdit} sx={{ color: COLORS.subtext }} disabled={saving}>
+            <CloseRoundedIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <Divider sx={{ borderColor: COLORS.border }} />
+
+        {editApp && (
+          <DialogContent sx={{ pt: 3 }}>
+            <Stack spacing={2.5}>
+              <Box>
+                <Typography sx={{ color: COLORS.subtext, fontSize: 13, mb: 0.5 }}>
+                  Patient
+                </Typography>
+                <Typography sx={{ color: COLORS.text, fontWeight: 600 }}>
+                  {editApp.name} · {editApp.email}
+                </Typography>
+              </Box>
+
+              <TextField
+                select
+                fullWidth
+                label="Status"
+                value={editForm.status}
+                onChange={handleEditChange("status")}
+                sx={textFieldStyle}
+                slotProps={{
+                  select: {
+                    MenuProps: {
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            bgcolor: COLORS.card,
+                            color: COLORS.text,
+                            "& .MuiMenuItem-root:hover": {
+                              bgcolor: `${COLORS.primary}22`,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
+              >
+                {STATUS_OPTIONS.map((opt) => (
+                  <MenuItem key={opt} value={opt}>
+                    {opt}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Date"
+                  value={editForm.date}
+                  onChange={handleEditChange("date")}
+                  sx={textFieldStyle}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+                <TextField
+                  fullWidth
+                  type="time"
+                  label="Time"
+                  value={editForm.time}
+                  onChange={handleEditChange("time")}
+                  sx={textFieldStyle}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+              </Stack>
+
+              {saveError && (
+                <Typography sx={{ color: COLORS.rejected, fontSize: 13 }}>
+                  {saveError}
+                </Typography>
+              )}
+            </Stack>
+          </DialogContent>
+        )}
+
+        <DialogActions sx={{ p: 2.5 }}>
+          <Button
+            onClick={closeEdit}
+            disabled={saving}
+            sx={{
+              color: COLORS.subtext,
+              textTransform: "none",
+              borderRadius: "20px",
+              px: 3,
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveEdit}
+            disabled={saving}
+            variant="contained"
+            sx={{
+              bgcolor: COLORS.primary,
+              textTransform: "none",
+              borderRadius: "20px",
+              px: 3,
+              "&:hover": { bgcolor: "#4FA5CE" },
+            }}
+          >
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
         </DialogActions>
       </Dialog>
