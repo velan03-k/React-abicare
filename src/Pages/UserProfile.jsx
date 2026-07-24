@@ -18,7 +18,6 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
-import MedicalServicesRoundedIcon from "@mui/icons-material/MedicalServicesRounded";
 import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
