@@ -17,6 +17,7 @@ import Departments from "../Pages/Departments";
 import Applications from "../Pages/Applications";
 import Departmentsadmin from "../Pages/Admin/Departmentsadmin";
 import Applicationsadmin from "../Pages/Admin/Applicationadmin";
+import UserProfile from "../Pages/UserProfile";
 function AppRouter() {
   return (
     <Routes>
@@ -31,6 +32,7 @@ function AppRouter() {
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/departments" element={<Departments  />} />
         <Route path="/applications" element={<Applications />} />
+        <Route path="/profile" element={<UserProfile/>}/>
       </Route>
 
       {/* Admin Routes */}
